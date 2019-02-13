@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8b3185ae-bcae-4588-870a-9b6a4c6fcb5d" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/channelB.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/chat1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/chat2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/gray.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/line.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/originPoint.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/output.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/img/point.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/Main.class" afterPath="$PROJECT_DIR$/target/classes/Main.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/models/NumPoint.class" afterPath="$PROJECT_DIR$/target/classes/models/NumPoint.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/models/Point.class" afterPath="$PROJECT_DIR$/target/classes/models/Point.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/utils/OpenCVUtils.class" afterPath="$PROJECT_DIR$/target/classes/utils/OpenCVUtils.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/utils/Tess4jUtils.class" afterPath="$PROJECT_DIR$/target/classes/utils/Tess4jUtils.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/utils/Utils.class" afterPath="$PROJECT_DIR$/target/classes/utils/Utils.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datafromchart.iml" afterPath="$PROJECT_DIR$/datafromchart.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/Main.java" afterPath="$PROJECT_DIR$/src/main/java/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/models/NumPoint.java" afterPath="$PROJECT_DIR$/src/main/java/models/NumPoint.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/models/Point.java" afterPath="$PROJECT_DIR$/src/main/java/models/Point.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/OpenCVUtils.java" afterPath="$PROJECT_DIR$/src/main/java/utils/OpenCVUtils.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/Tess4jUtils.java" afterPath="$PROJECT_DIR$/src/main/java/utils/Tess4jUtils.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/Utils.java" afterPath="$PROJECT_DIR$/src/main/java/utils/Utils.java" />
-    </list>
+    <list default="true" id="8b3185ae-bcae-4588-870a-9b6a4c6fcb5d" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -218,7 +194,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="952" />
     <option name="width" value="976" />
     <option name="height" value="1038" />
@@ -382,15 +358,15 @@
       <workItem from="1548124681354" duration="1767000" />
       <workItem from="1548551782853" duration="6413000" />
       <workItem from="1549376923137" duration="264000" />
-      <workItem from="1550047502125" duration="952000" />
+      <workItem from="1550047502125" duration="1913000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="200352000" />
+    <option name="totallyTimeSpent" value="201313000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="952" y="0" width="976" height="1038" extended-state="1" />
+    <frame x="952" y="0" width="976" height="1038" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
