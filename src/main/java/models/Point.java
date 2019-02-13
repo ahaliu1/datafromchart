@@ -1,35 +1,35 @@
 package models;
 
 public class Point {
-    private int rowNum;
+    private int y;
 
-    public int getRowNum() {
-        return rowNum;
+    public int getY() {
+        return y;
     }
 
-    public void setRowNum(int rowNum) {
-        this.rowNum = rowNum;
+    public void setY(int y) {
+        this.y = y;
     }
 
-    public int getColNum() {
-        return colNum;
+    public int getX() {
+        return x;
     }
 
-    public void setColNum(int colNum) {
-        this.colNum = colNum;
+    public void setX(int x) {
+        this.x = x;
     }
 
-    private int colNum;
+    private int x;
 
-    public Point(int rowNum,int colNum){
-        this.rowNum=rowNum;
-        this.colNum=colNum;
+    public Point(int x,int y){
+        this.y =y;
+        this.x =x;
     }
     public Point(){
-        this.rowNum=-1;
-        this.colNum=-1;
+        this.y =-1;
+        this.x =-1;
     }
     public void print(){
-        System.out.println(this.colNum+"\t"+this.rowNum+"\t");
+        System.out.println(this.x +"\t"+this.y +"\t");
     }
 }

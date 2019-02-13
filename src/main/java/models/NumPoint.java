@@ -1,19 +1,19 @@
 package models;
 
 public class NumPoint extends Point {
-    public int getNumber() {
+    public int getNumber1() {
         return number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setNumber1(int number1) {
+        this.number = number1;
     }
 
     private int number;
 
-    public NumPoint(int number,int rowNum,int colNum){
+    public NumPoint(int number, int rowNum, int colNum){
         super(rowNum, colNum);
-        this.number=number;
+        this.number = number;
     }
 
 }

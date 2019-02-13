@@ -5,16 +5,16 @@ import models.DatePoint;
 import models.NumPoint;
 import models.Point;
 import net.sourceforge.tess4j.Word;
+import org.opencv.core.Mat;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public List<NumPoint> getRightNumPoints(List<Word> numList, Point originPoint) {
-        List<NumPoint> numPointList = new ArrayList<NumPoint>();
 
+    public List<NumPoint> getRightNumPointsForBaidu(List<Word> numList, Point originPoint) {
+        List<NumPoint> numPointList = new ArrayList<NumPoint>();
         // 过滤数字
         for (Word word : numList) {
             if (word.getText().length() < 10) {
@@ -34,13 +34,13 @@ public class Utils {
 
         // 算法，计算得出数值差/纵坐标差
         for (int i = 0; i < numPointList.size(); i++) {
-            int num = numPointList.get(i).getNumber();
-            int rowNum = numPointList.get(i).getRowNum();
+            int num = numPointList.get(i).getNumber1();
+            int rowNum = numPointList.get(i).getY();
             double rate[] = new double[numPointList.size()];
 
             for (int j = 0; j < numPointList.size(); j++) {
-                int targetNum = numPointList.get(j).getNumber();
-                int targetRowNum = numPointList.get(j).getRowNum();
+                int targetNum = numPointList.get(j).getNumber1();
+                int targetRowNum = numPointList.get(j).getY();
                 if (targetRowNum - rowNum == 0) {
                     rate[j] = 0;
                 } else {
@@ -71,7 +71,7 @@ public class Utils {
         return rightNumPointList;
     }
 
-    public List<DatePoint> getRightDatePoints(List<Word> dateList, Point originPoint) {
+    public List<DatePoint> getRightDatePointsForBaidu(List<Word> dateList, Point originPoint) {
         List<DatePoint> datePointList = new ArrayList<DatePoint>();
 
         Pattern y = Pattern.compile("(\\d{4})\\年*");
@@ -104,12 +104,12 @@ public class Utils {
         // 算法，计算得出数值差/横坐标差
         for (int i = 0; i < datePointList.size(); i++) {
             long time = datePointList.get(i).getDate().getTimeInMillis();
-            int rowNum = datePointList.get(i).getRowNum();
+            int rowNum = datePointList.get(i).getY();
             double rate[] = new double[datePointList.size()];
 
             for (int j = 0; j < datePointList.size(); j++) {
                 long targetTime = datePointList.get(j).getDate().getTimeInMillis();
-                int targetRowNum = datePointList.get(j).getRowNum();
+                int targetRowNum = datePointList.get(j).getY();
                 if (targetRowNum - rowNum == 0) {
                     rate[j] = 0;
                 } else {
@@ -141,14 +141,6 @@ public class Utils {
 
     }
 
-    public List<NumPoint> getPixelCoordinate(List<NumPoint> numPointList, Point originPoint) {
-        for (NumPoint numPoint : numPointList) {
-            numPoint.setColNum(numPoint.getColNum() - originPoint.getColNum());
-            numPoint.setRowNum(originPoint.getRowNum() - numPoint.getRowNum());
-        }
-        return numPointList;
-    }
-
     /**
      * @param linePointList      曲线坐标
      * @param originPoint        原点坐标
@@ -156,26 +148,29 @@ public class Utils {
      * @param rightDatePointList x轴上正确的点
      * @return
      */
-    public List<DateNumPoint> getCoordinate(List<Point> linePointList, Point originPoint, List<NumPoint> rigitNumPointList, List<DatePoint> rightDatePointList) {
-        double yRate = Math.abs((rigitNumPointList.get(0).getNumber() - rigitNumPointList.get(1).getNumber())
-                / (rigitNumPointList.get(0).getRowNum() - rigitNumPointList.get(1).getRowNum()));
+    public List<DateNumPoint> getCoordinateForBaidu(List<Point> linePointList,
+                                                    Point originPoint,
+                                                    List<NumPoint> rigitNumPointList,
+                                                    List<DatePoint> rightDatePointList) {
+        double yRate = Math.abs((rigitNumPointList.get(0).getNumber1() - rigitNumPointList.get(1).getNumber1())
+                / (rigitNumPointList.get(0).getY() - rigitNumPointList.get(1).getY()));
 
         // 25为图片中最下方的y数字与原点像素差距
-        double originY = rigitNumPointList.get(0).getNumber() - (Math.abs(rigitNumPointList.get(0).getRowNum() -
-                originPoint.getRowNum()) + 25) * yRate;
+        double originY = rigitNumPointList.get(0).getNumber1() - (Math.abs(rigitNumPointList.get(0).getY() -
+                originPoint.getY()) + 25) * yRate;
 
         double xRate = Math.abs((rightDatePointList.get(1).getDate().getTimeInMillis() -
                 rightDatePointList.get(2).getDate().getTimeInMillis())
-                / (rightDatePointList.get(1).getColNum() - rightDatePointList.get(2).getColNum()));
+                / (rightDatePointList.get(1).getX() - rightDatePointList.get(2).getX()));
 
         long originX = rightDatePointList.get(0).getDate().getTimeInMillis() -
-                (long) ((Math.abs(rightDatePointList.get(0).getColNum() - originPoint.getColNum())) * xRate);
+                (long) ((Math.abs(rightDatePointList.get(0).getX() - originPoint.getX())) * xRate);
 
         // 计算每个点的日期与指数
         List<DateNumPoint> dateNumPointList = new ArrayList<DateNumPoint>();
         for (Point numPoint : linePointList) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(originX + (long) (Math.abs(numPoint.getColNum() - originPoint.getColNum()) * xRate));
+            calendar.setTimeInMillis(originX + (long) (Math.abs(numPoint.getX() - originPoint.getX()) * xRate));
 
             boolean existFlag = false;
 
@@ -189,9 +184,9 @@ public class Utils {
             }
             // 如果还没有这一天的点则加入
             if (!existFlag) {
-                int yNum = (int) (Math.abs(numPoint.getRowNum() - originPoint.getRowNum()) * yRate + originY);
+                int yNum = (int) (Math.abs(numPoint.getY() - originPoint.getY()) * yRate + originY);
 
-                DateNumPoint dateNumPoint = new DateNumPoint(calendar, yNum, numPoint.getRowNum(), numPoint.getColNum());
+                DateNumPoint dateNumPoint = new DateNumPoint(calendar, yNum, numPoint.getY(), numPoint.getX());
 
                 dateNumPointList.add(dateNumPoint);
             }
@@ -199,5 +194,208 @@ public class Utils {
         }
 
         return dateNumPointList;
+    }
+
+    /**
+     * @param line
+     * @param originalPoint
+     * @param xRate
+     * @param yRate
+     * @param x0
+     * @param y0
+     * @return
+     */
+    public List<double[]> cal(Mat line, Point originalPoint, double xRate, double yRate, double x0, double y0) {
+        List<double[]> points = new ArrayList<double[]>();
+
+        for (int i = 0; i < line.rows(); i++) {
+            for (int j = 0; j < line.cols(); j++) {
+                if (line.get(i, j)[0] != 255) {
+                    double x = (j - originalPoint.getX()) * xRate + x0;
+                    double y = Math.abs(originalPoint.getY() - i) * yRate + y0;
+                    double[] a = new double[2];
+                    a[0] = x;
+                    a[1] = y;
+                    points.add(a);
+                }
+            }
+        }
+
+        return points;
+    }
+
+    /**
+     * 将图片中所有文本分类识别出横，纵轴数据。
+     *
+     * @param words 包含识别图片中的所有的文本
+     * @return
+     */
+    public List<List<Word>> splitIntoLateralAndDirect(List<Word> words) {
+        List<List<Word>> ret = new ArrayList<List<Word>>();
+        List<List<Word>> xEqualList = new ArrayList<List<Word>>();
+        List<List<Word>> yEqualList = new ArrayList<List<Word>>();
+
+        for (Word w : words) {
+            int x = w.getBoundingBox().x;
+            int y = w.getBoundingBox().y;
+
+            boolean x_flag = false;
+            boolean y_flag = false;
+
+            for (List<Word> wordList : xEqualList) {
+                if (x <= wordList.get(0).getBoundingBox().x + 3 && x >= wordList.get(0).getBoundingBox().x - 3) {
+                    wordList.add(w);
+                    x_flag = true;
+                }
+            }
+            if (!x_flag) {
+                List<Word> temp = new ArrayList<Word>();
+                temp.add(w);
+                xEqualList.add(temp);
+            }
+
+            for (List<Word> wordList : yEqualList) {
+                if (y <= wordList.get(0).getBoundingBox().y + 3 && y >= wordList.get(0).getBoundingBox().y - 3) {
+                    wordList.add(w);
+                    y_flag = true;
+                }
+            }
+            if (!y_flag) {
+                List<Word> temp = new ArrayList<Word>();
+                temp.add(w);
+                yEqualList.add(temp);
+            }
+        }
+
+        ret.add(getLongestList(yEqualList));
+        ret.add(getLongestList(xEqualList));
+
+        return ret;
+    }
+
+    public List<Word> filterPointByRate(List<Word> words, boolean isX) {
+        List<Word> rightNumPointList = new ArrayList<Word>();
+
+        // 算法，计算得出数值差/纵坐标差
+        for (int i = 0; i < words.size(); i++) {
+            int textNum = 0;
+            try {
+                textNum = Integer.parseInt(words.get(i).getText());
+
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            int axisNum = isX ? (int) words.get(i).getBoundingBox().getX() : (int) words.get(i).getBoundingBox().getY();
+            double rate[] = new double[words.size()];
+
+            for (int j = 0; j < words.size(); j++) {
+                int targetNum = 0;
+                try {
+                    targetNum = Integer.parseInt(words.get(j).getText());
+
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+
+                int targetRowNum = isX ? (int) words.get(j).getBoundingBox().getX() : (int) words.get(j).getBoundingBox().getY();
+                if (targetRowNum - axisNum == 0) {
+                    rate[j] = 0;
+                } else {
+                    rate[j] = (float) (targetRowNum - axisNum) / (targetNum - textNum);
+                }
+            }
+
+            // 如果存在两个比值差小于level,并且对比的两个点的比值与该点比值小于level，则认为该点识别正确
+            boolean findFlag = false;
+            double level = 1;
+            for (int j = 0; j < words.size(); j++) {
+                for (int k = 0; k < words.size(); k++) {
+                    if (!findFlag) {
+                        double f = Math.abs(rate[j] - rate[k]);
+                        if (f < level && j != k && i != j && i != k) {
+                            int a = 0;
+                            try {
+                                a = Integer.parseInt(words.get(j).getText()) - Integer.parseInt(words.get(k).getText());
+                            } catch (NumberFormatException e) {
+                                continue;
+                            }
+
+                            int b = isX ? (int) words.get(j).getBoundingBox().getX() : (int) words.get(j).getBoundingBox().getY();
+                            int c = isX ? (int) words.get(k).getBoundingBox().getX() : (int) words.get(k).getBoundingBox().getY();
+                            float backup = (float) Math.abs((c - b) / a);
+                            double e = Math.abs(Math.abs(rate[j]) - Math.abs(backup));
+                            if (e < level) {
+                                findFlag = true;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            if (findFlag) {
+                rightNumPointList.add(words.get(i));
+            }
+        }
+
+        return rightNumPointList;
+    }
+
+    /**
+     * 得到最常的list
+     *
+     * @param lists
+     * @return
+     */
+    private List<Word> getLongestList(List<List<Word>> lists) {
+        int longest = 0;
+        int longestIndex = 0;
+        for (List<Word> wordList : lists) {
+            if (wordList.size() > longest) {
+                longest = wordList.size();
+                longestIndex = lists.indexOf(wordList);
+            }
+        }
+        return lists.get(longestIndex);
+
+    }
+
+    public List<Double[]> getCoordinate(List<Point> linePoints, Point originalPoint, List<Word> lateralAxisWords, List<Word> directAxisWords) {
+        List<Double[]> coordinates = new ArrayList<Double[]>();
+
+        double xRate, yRate;
+
+        if (lateralAxisWords.size() < 3) {
+            System.out.println("横坐标识别数目不够");
+            return coordinates;
+        } else {
+            xRate = Math.abs((Double.valueOf(lateralAxisWords.get(0).getText()) - Double.valueOf(lateralAxisWords.get(1).getText())) /
+                    (lateralAxisWords.get(0).getBoundingBox().getX() - lateralAxisWords.get(1).getBoundingBox().getX()));
+        }
+
+        if (directAxisWords.size() < 3) {
+            System.out.println("纵坐标识别数目不够");
+            return coordinates;
+        } else {
+            yRate = Math.abs((Double.valueOf(directAxisWords.get(0).getText()) - Double.valueOf(directAxisWords.get(1).getText())) /
+                    (directAxisWords.get(0).getBoundingBox().getY() - directAxisWords.get(1).getBoundingBox().getY()));
+        }
+
+        double originalX = Double.valueOf(lateralAxisWords.get(0).getText()) -
+                (lateralAxisWords.get(0).getBoundingBox().getCenterX() - originalPoint.getX()) * xRate;
+
+        double originalY = Double.valueOf(directAxisWords.get(0).getText()) -
+                (originalPoint.getY() - directAxisWords.get(0).getBoundingBox().getCenterY()) * yRate;
+
+
+        for (Point point : linePoints) {
+            double newX = (point.getX() - originalPoint.getX()) * xRate + originalX;
+            double newY = (originalPoint.getY() - point.getY()) * yRate + originalY;
+            Double temp[] = {newX, newY};
+            coordinates.add(temp);
+        }
+
+        return coordinates;
     }
 }
