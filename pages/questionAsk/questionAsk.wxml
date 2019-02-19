@@ -1,0 +1,26 @@
+<view class="question-form">
+
+
+  <view class="question-images-area">
+
+    <!-- 添加图片按钮  -->
+    <view class="question-images-tool">
+      <button type="default" size="mini" bindtap="chooseImage" wx:if="{{images.length == null}}">添加图片</button>
+    </view>
+
+    <!-- 图片缩略图  -->
+    <view class="question-images">
+      <block wx:if="{{images.length != null}}">
+        <view class="q-image-wrap">
+          <image class="q-image" src="{{images}}" mode="aspectFill" bindtap="handleImagePreview"></image>
+          <view class="q-image-remover" bindtap="removeImage">删除</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 提交表单按钮  -->
+  <block wx:if="{{images.length != null}}">
+  <button class="weui-btn" type="primary" bindtap="submitForm">提交</button>
+   </block>
+</view>
