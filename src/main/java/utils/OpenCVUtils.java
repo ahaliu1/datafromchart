@@ -65,7 +65,7 @@ public class OpenCVUtils {
                 if (line.get(j, i)[0] != 255) {
 
                     // 转化为黑底白线
-                    line.put(j,i,255);
+                    line.put(j, i, 255);
                     for (int k = j - 1; k > -1; k--) {
                         line.put(k, i, 0);
                     }
@@ -81,7 +81,7 @@ public class OpenCVUtils {
      * 返回图像中曲线的坐标列表
      *
      * @param image 原图
-     * @param color
+     * @param color 线条颜色
      * @return
      */
     public List<Point> getLinePoint(Mat image, int color) {
@@ -139,7 +139,7 @@ public class OpenCVUtils {
         for (int i = 0; i < binary.cols(); i++) {
             for (int j = binary.rows() - 1; j > -1; j--) {
                 if (binary.get(j, i)[0] == 255) {
-                    points.add(new Point(i,j));
+                    points.add(new Point(i, j));
 //                    for (int k = j - 1; k > -1; k--) {
 //                        binary.put(k, i, 0);
 //                    }
@@ -251,7 +251,7 @@ public class OpenCVUtils {
 
 //            System.out.println(area);
 //            面积小于100的全部筛选掉
-            if (area <100||area >1000)
+            if (area < 100 || area > 1000)
                 continue;
 
 
@@ -314,4 +314,52 @@ public class OpenCVUtils {
         return rects;
     }
 
+    public Mat houghGetLine(Mat image) {
+        Mat srcImage = image.clone();
+        Mat dstImage = srcImage.clone();
+        Imgproc.Canny(srcImage, dstImage, 400, 500, 5, false);
+        Mat storage = new Mat();
+        Imgproc.HoughLines(dstImage, storage, 1, Math.PI / 180, 150, 0, 0, 0, 10);
+        for (int x = 0; x < storage.rows(); x++) {
+            double[] vec = storage.get(x, 0);
+
+            double rho = vec[0];
+            double theta = vec[1];
+
+            org.opencv.core.Point pt1 = new org.opencv.core.Point();
+            org.opencv.core.Point pt2 = new org.opencv.core.Point();
+
+            double a = Math.cos(theta);
+            double b = Math.sin(theta);
+
+            double x0 = a * rho;
+            double y0 = b * rho;
+
+            pt1.x = Math.round(x0 + 1000 * (-b));
+            pt1.y = Math.round(y0 + 1000 * (a));
+            pt2.x = Math.round(x0 - 1000 * (-b));
+            pt2.y = Math.round(y0 - 1000 * (a));
+
+            if (theta >= 0) {
+                Imgproc.line(srcImage, pt1, pt2, new Scalar(0, 255, 255), 3, Imgproc.LINE_4, 0);
+            }
+        }
+        return srcImage;
+    }
+
+    public Mat houghProbilityGetLine(Mat image) {
+        Mat srcImage = image.clone();
+        Mat dstImage = srcImage.clone();
+        Imgproc.Canny(srcImage, dstImage, 400, 500, 5, false);
+        Mat storage = new Mat();
+        Imgproc.HoughLinesP(dstImage, storage, 1, Math.PI / 180, 100, 0, 0);
+        for (int x = 0; x < storage.rows(); x++) {
+            double[] vec = storage.get(x, 0);
+            double x1 = vec[0], y1 = vec[1], x2 = vec[2], y2 = vec[3];
+            org.opencv.core.Point start = new org.opencv.core.Point(x1, y1);
+            org.opencv.core.Point end = new org.opencv.core.Point(x2, y2);
+            Imgproc.line(srcImage, start, end, new Scalar(0, 255, 255), 2, Imgproc.LINE_4, 0);
+        }
+        return srcImage;
+    }
 }

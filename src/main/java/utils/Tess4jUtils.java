@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,7 +44,7 @@ public class Tess4jUtils {
 
     public String doOCRInRectangle(BufferedImage bi, int x, int y, int width, int height) throws Exception {
         setlanguage("eng");
-        //划定区域
+        // 划定区域
         // x,y是以左上角为原点，width和height是以xy为基础
         Rectangle rect = new Rectangle(x, y, width, height);
         return instance.doOCR(bi, rect);
