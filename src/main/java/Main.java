@@ -28,9 +28,9 @@ public class Main {
 //        String path1 = ".\\img\\test1.png";
 //        getDataFromBaidu(path1);
 
-        String path2 = ".\\img\\3.png";
+        String path2 = ".\\img\\2-2.png";
         try {
-            getDataFromCommonLineChat(path2);
+            getDataFromCommonLineChart(path2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,19 +135,22 @@ public class Main {
      *
      * @param path
      */
-    private static void getDataFromCommonLineChat(String path) throws Exception {
+    private static void getDataFromCommonLineChart(String path) throws Exception {
         // 打开图片
         Mat image = Imgcodecs.imread(path);
         if (image.empty()) {
-            System.out.println("empty");
+            System.out.println("file is not exist");
         }
 
         Mat imageCopy = image.clone();
 
+        // 标记图片中文字区域
         List<RotatedRect> textAreas = openCVUtils.drawTextArea(image);
 
+        // 对文字区域数字识别
         List<Word> words = tess4jUtils.getWordListFromArea(textAreas, path, "eng", true);
 
+        // 根据横纵坐标关系划分成横坐标值和纵坐标值
         List<List<Word>> lateralAndDirectListAxis = utils.splitIntoLateralAndDirect(words);
 
         // 横轴数字list
@@ -159,16 +162,20 @@ public class Main {
         Point originPoint = new Point((int) (directAxisWords.get(0).getBoundingBox().x + directAxisWords.get(0).getBoundingBox().getWidth())
                 , lateralAxisWords.get(0).getBoundingBox().y);
 
-        //
+        // 过滤横坐标值
         lateralAxisWords = utils.filterPointByRate(lateralAxisWords, true);
 
+        // 过滤纵坐标值
         directAxisWords = utils.filterPointByRate(directAxisWords, false);
 
+        // 滤波过滤曲线相对图片坐标点
         List<Point> points = openCVUtils.getLinePoint(imageCopy, openCVUtils.BLUE);
 
+        // 计算相对于原点的坐标
         List<Double[]> coordinates = utils.getCoordinate(points, originPoint, lateralAxisWords, directAxisWords);
 
 
+        // 写入excel
         File xlsFile = new File("data.xls");
         // 创建一个工作簿
         WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
@@ -184,7 +191,7 @@ public class Main {
         }
 
         WritableSheet sheet2 = workbook.createSheet("sheet2", 1);
-        for (int i = 0; i <points.size(); i++) {
+        for (int i = 0; i < points.size(); i++) {
             // 向工作表中添加数据
             sheet2.addCell(new Number(0, i, points.get(i).getX()));
             sheet2.addCell(new Number(1, i, points.get(i).getY()));
@@ -195,6 +202,18 @@ public class Main {
 
     }
 
+    /**
+     * 测试直线提取
+     */
+    private static void getline(String path) {
+        Mat srcImage = Imgcodecs.imread(path);
+        if (srcImage.empty()) {
+            System.out.println("empty");
+        }
+
+        Mat dstImage = openCVUtils.houghProbilityGetLine(srcImage);
+        Imgcodecs.imwrite(".\\img\\hough.jpg", dstImage);
+    }
 }
 
 
